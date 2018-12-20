@@ -3,7 +3,7 @@ var arrayOfQuestions = [];
 var correct = 0;
 var incorrect = 0;
 var unanswered = 0;
-var time = 10;
+var time = 20;
 var currentIndex = 0;
 var guessMade = false;
 
@@ -16,16 +16,16 @@ function question(text, answers, correctAnswers, imageURL){
     this.imageURL = imageURL;
 }
     //pushing question data
-arrayOfQuestions.push(new question("first question", ["Oh", "Yes", "Ok", "No"], 0, "https://picsum.photos/1175/400?image=1074"));
-arrayOfQuestions.push(new question("second question", ["0", "1", "2", "3"], 1, "https://picsum.photos/1175/400?image=1070"));
-arrayOfQuestions.push(new question("third question", ["0", "1", "2", "3"], 2, "https://picsum.photos/1175/400?image=1067"));
-arrayOfQuestions.push(new question("fourth question", ["0", "1", "2", "3"], 3, "https://picsum.photos/1175/400?image=1040"));
-arrayOfQuestions.push(new question("fifth question", ["0", "1", "2", "3"], 0, "https://picsum.photos/1175/400?image=1020"));
-arrayOfQuestions.push(new question("sixth question", ["0", "1", "2", "3"], 1, "https://picsum.photos/1175/400?image=1003"));
-arrayOfQuestions.push(new question("seventh question", ["0", "1", "2", "3"], 2, "https://picsum.photos/1175/400?image=1005"));
-arrayOfQuestions.push(new question("eighth question", ["0", "1", "2", "3"], 3, "https://picsum.photos/1175/400?image=944"));
-arrayOfQuestions.push(new question("ninth question", ["0", "1", "2", "3"], 0 , "https://picsum.photos/1175/400?image=882"));
-arrayOfQuestions.push(new question("tenth question", ["0", "1", "2", "3"], 1, "https://picsum.photos/1175/400?image=858"));
+arrayOfQuestions.push(new question("What is the best selling Christmas album in the U.S.?", ["Bing Crosby: White Christmas", "Elvis' Christmas Album", "Mariah Carey: Merry Christmas", "Kenny G: Miracles: The Holiday Album"], 1, "assets/images/recordx.jpg"));
+arrayOfQuestions.push(new question("Which U.S. state streams the most Christmas music per capita?", ["Utah", "Florida", "Wisconsin", "White Christmas"], 0, "assets/images/mapx.jpg"));
+arrayOfQuestions.push(new question("How many times did Bobby Helms re-record his hit, \"Jingle Bell Rock\"?", ["Once", "Six times", "Twelve times", "White Christmas"], 1, "assets/images/micx.jpg"));
+arrayOfQuestions.push(new question("The a cappella vocalist group, Pentatonix, has the most youtube views (200M) on which of their Christmas covers?", ["White Christmas", "Angels We Have Heard On High", "Litte Drummer Boy", "Mary, Did You Know?"], 2, "assets/images/youtubex.jpg"));
+arrayOfQuestions.push(new question("Which of these songs was actually written to celebrate Thanksgiving?", ["Jingle Bells", "White Christmas", "Let It Snow", "Up on the House Top"], 0, "assets/images/thanksgivingx.jpg"));
+arrayOfQuestions.push(new question("The original composer of White Christmas, Irving Berlin, tried to pull this artist's cover from the radio because he hated it.", ["Bing Crosby", "Lady Gaga", "White Christmas", "Elvis Presley"], 3, "assets/images/sadtreex.jpg"));
+arrayOfQuestions.push(new question("Originally composed in Latin, which of these Christmas songs is the oldest?", ["Joy to the World", "Silver Bells", "White Christmas", "O Come, O Come Emmanuel"], 3, "assets/images/churchx.jpg"));
+arrayOfQuestions.push(new question("Which Christmas song was played the most on Spotify in 2017?", ["White Christmas - Bing Crosby", "Let It Snow! - Frank Sinatra", "Mistletoe - Justin Beiber", "All I Want for Christmas Is You - Mariah Carey"], 3, "assets/images/phonex.jpg"));
+arrayOfQuestions.push(new question("\"Have Yourself a Merry Little Christmas\" was written for this movie featuring Judy Garland.", ["The Wizard of Oz", "Meet Me in St. Louis", "Miracle on 34th Street", "White Christmas"], 1 , "assets/images/treex.jpg"));
+arrayOfQuestions.push(new question("Which Christmas song is a wrong answer to all previous questions?", ["White Christmas", "Blue Christmas", "No Christmas", "Baby, It's Cold Outside"], 0, "assets/images/bingcrosbyx.jpg"));
 
 console.log(arrayOfQuestions);
 
@@ -36,12 +36,18 @@ $(document).ready(function(){
 
 // 3. Trivia Logic
 function timer() {
-    setInterval(function(){time--;}, 1000);
-    if(time == 0) {
-        clearTimeout(time);
-        unanswered++;
-        // TODO move to next question
-    }
+    var intervalID = setInterval(function() {
+        if (guessMade) {
+            clearInterval(intervalID);
+        } else if (time == -1) {
+            clearInterval(intervalID);
+            unanswered++;
+            nextQuestion();
+        } else {
+        $("#time").text("Time Remaining: " + time + " seconds");
+        time--;
+        }
+    }, 1000);
 }
 
     // on start, run first question
@@ -64,8 +70,10 @@ function loadQuestion(question) {
 
     "<div class='col-md-5 p-3 mr-auto ml-2 border border-info rounded hover-background animated fadeIn answer' data-correct='" + question.correctAnswer + "'><h4>" + question.answers[3] + "</h4></div></div>" + //answer 4
     
-    "<div class='row p-4 text-center'><div class='col-md-12'><h3>Time Remaining: 10 seconds</h3></div></div>"
+    "<div class='row p-4 text-center'><div class='col-md-12'><h3 id='time'></h3></div></div>"
     );
+    time = 20; // reset time
+    timer(); // begin clock
 }
 
     // check user answer
@@ -80,23 +88,28 @@ function checkAnswer() {
             console.log("YOU CHOSE CORRECTLY");
             $(this).css({"background-color":"#28a745", "transition": "1s"});
             $(".question").html("<h3>You guessed correctly!</h3>");
-            guessMade = true;
             correct++;
         } else {
             console.log("WRONG");
             $(this).css({"background-color":"#dc3545", "transition": "1s"});
             $(".question").html("<h3>You guessed wrong.</h3>");
-            guessMade = true;
             incorrect++;
         }
-        setTimeout(function(){nextQuestion()}, 5000);
+        guessMade = true;
+        setTimeout(function(){nextQuestion()}, 3000);
     }
 }
-    // cycle through question
+    // cycle through question or goes to game end
 function nextQuestion() {
     currentIndex++; // sets index to the next question
-    loadQuestion(arrayOfQuestions[currentIndex]);
+    if(currentIndex < arrayOfQuestions.length) {
+        loadQuestion(arrayOfQuestions[currentIndex]);
+    } else {
+        gameOver();
+    }
+    guessMade = false;
 }
+
 
 
 // 4. Click Events
@@ -105,15 +118,27 @@ $(document).on("click", "#reset", function(){reset()}); // runs reset()
 $(document).on("click", ".answer", checkAnswer); // run checkAnswer() when an answer is clicked
 
 // 5. Game ending stats and reset
+    // shows stats screen
+function gameOver() {
+    $("#game").html(
+        "<img class='img-fluid rounded' src='assets/images/santax.jpg' alt='Game over image'>" + // game over image
+
+        "<div class='row p-4 text-center'><div class='col-md-6 mx-auto'><h2>Game Over</h2><h4>Correct Answers: " + correct + "</h4><h4>Incorrect Answers: " + incorrect + "</h4><h4>Unanswered: " + unanswered + "</h4></div></div>" // game stats
+    );
+}
+
+    // resets to start page
 function reset() {
     TotalCorrectAnswers = 0;
     TotalIncorrectAnswers = 0;
     TotalUnanswered = 0;
     currentIndex = 0;
+    guessMade = false;
+
 
     // reset html
     $("#game").html(
-        "<img class='img-fluid rounded' src='https://picsum.photos/1175/300?image=1062' alt='Image to accompany trivia question'>" + // start image
+        "<img class='img-fluid rounded' src='assets/images/startx.jpg' alt='Image to accompany trivia question'>" + // start image
 
         "<div class='row p-4 text-center'><div class='col-md-6 mx-auto'><h2>Instructions</h2><p>Press Start to begin the trivia game. See how many questions you can get right. You only get a few seconds per question!</p></div></div>" + // instructions
             
@@ -121,7 +146,7 @@ function reset() {
     );
 }
 
-    // new game function
+
 
 // 6. Images and sounds
 
