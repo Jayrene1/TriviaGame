@@ -8,6 +8,7 @@ var currentIndex = 0;
 var guessMade = false;
 
 
+
 // 2. Object declaration
 function question(text, answers, correctAnswers, imageURL){
     this.text = text;
@@ -49,9 +50,6 @@ function timer() {
         }
     }, 1000);
 }
-
-    // on start, run first question
-
 
     // display question text and answers
 function loadQuestion(question) {
@@ -117,6 +115,8 @@ $(document).on("click", "#start", function(){loadQuestion(arrayOfQuestions[curre
 $(document).on("click", "#reset", function(){reset()}); // runs reset()
 $(document).on("click", ".answer", checkAnswer); // run checkAnswer() when an answer is clicked
 
+
+
 // 5. Game ending stats and reset
     // shows stats screen
 function gameOver() {
@@ -135,8 +135,7 @@ function reset() {
     currentIndex = 0;
     guessMade = false;
 
-
-    // reset html
+        // reset html t starting page
     $("#game").html(
         "<img class='img-fluid rounded' src='assets/images/startx.jpg' alt='Image to accompany trivia question'>" + // start image
 
@@ -145,10 +144,5 @@ function reset() {
         "<div class='row p-4 text-center'><div class='col-md-12'><button id='start' type='button' class='btn btn-info btn-lg'>Start Game</button></div></div>" // start button
     );
 }
-
-
-
-// 6. Images and sounds
-
 
 }); //DOCUMENT READY close
